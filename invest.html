@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SIBAWE Bank – Investments</title>
+
+<style>
+body {
+    margin:0;
+    font-family:"Segoe UI", Arial, sans-serif;
+    background:#eef2f7;
+}
+
+.header {
+    background:#0a1f44;
+    color:white;
+    padding:20px 40px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.header a { color:#cbd5e1; text-decoration:none; }
+
+.container {
+    padding:40px;
+    max-width:1000px;
+    margin:auto;
+}
+
+.box {
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    margin-bottom:30px;
+}
+
+h2 { margin-top:0; }
+
+.asset-list {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.asset {
+    border:1px solid #e5e7eb;
+    padding:15px;
+    border-radius:10px;
+}
+
+.asset h4 { margin:0; }
+
+.buy-btn {
+    margin-top:10px;
+    padding:10px;
+    background:#0a1f44;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    width:100%;
+}
+
+.buy-btn:hover { background:#1e3a8a; }
+
+.portfolio table {
+    width:100%;
+    border-collapse:collapse;
+}
+
+.portfolio th, .portfolio td {
+    padding:12px;
+    border-top:1px solid #e5e7eb;
+}
+
+.positive { color:green; }
+.negative { color:red; }
+
+.modal {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background:white;
+    max-width:400px;
+    margin:10% auto;
+    padding:25px;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>SIBAWE Private Bank</h2>
+    <a href="dashboard.html">← Back to Dashboard</a>
+</div>
+
+<div class="container">
+
+    <div class="box">
+        <h2>Available Assets</h2>
+        <div class="asset-list">
+
+            <div class="asset">
+                <h4>Global Equity ETF</h4>
+                <p>Price: CHF 125.50</p>
+                <button class="buy-btn" onclick="openBuy('Global Equity ETF',125.50)">Buy</button>
+            </div>
+
+            <div class="asset">
+                <h4>Swiss Market Index Fund</h4>
+                <p>Price: CHF 310.00</p>
+                <button class="buy-btn" onclick="openBuy('Swiss Market Index Fund',310)">Buy</button>
+            </div>
+
+            <div class="asset">
+                <h4>Emerging Markets ETF</h4>
+                <p>Price: CHF 89.40</p>
+                <button class="buy-btn" onclick="openBuy('Emerging Markets ETF',89.40)">Buy</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="box portfolio">
+        <h2>Your Portfolio</h2>
+        <table id="portfolioTable">
+            <tr>
+                <th>Asset</th>
+                <th>Quantity</th>
+                <th>Value (CHF)</th>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+<div class="modal" id="buyModal">
+    <div class="modal-content">
+        <h3 id="assetName"></h3>
+        <p>Price per unit: CHF <span id="assetPrice"></span></p>
+
+        <input type="number" id="qty" placeholder="Quantity" style="width:100%; padding:10px;">
+        <br><br>
+        <button class="buy-btn" onclick="confirmBuy()">Confirm Purchase</button>
+    </div>
+</div>
+
+<script>
+let selectedAsset = "";
+let selectedPrice = 0;
+
+function openBuy(name, price) {
+    selectedAsset = name;
+    selectedPrice = price;
+    document.getElementById("assetName").innerText = name;
+    document.getElementById("assetPrice").innerText = price;
+    document.getElementById("buyModal").style.display = "block";
+}
+
+function confirmBuy() {
+    const qty = parseFloat(document.getElementById("qty").value);
+    if (!qty || qty <= 0) return;
+
+    const value = (qty * selectedPrice).toFixed(2);
+
+    const table = document.getElementById("portfolioTable");
+    const row = table.insertRow();
+    row.insertCell(0).innerText = selectedAsset;
+    row.insertCell(1).innerText = qty;
+    row.insertCell(2).innerText = "CHF " + value;
+
+    document.getElementById("buyModal").style.display = "none";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Private Bank – Réinitialisation sécurisée</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.reset-box{
+    max-width:450px;
+    margin:100px auto;
+    background:white;
+    padding:40px;
+    border-radius:14px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.1);
+    text-align:center;
+}
+.reset-box img{
+    height:50px;
+    margin-bottom:20px;
+}
+.reset-box h2{margin-bottom:10px;}
+.reset-box p{
+    color:#6b7280;
+    font-size:14px;
+}
+.reset-box input{
+    width:100%;
+    padding:14px;
+    border-radius:8px;
+    border:1px solid #d1d5db;
+    margin-top:20px;
+}
+.success{
+    background:#dcfce7;
+    color:#166534;
+    padding:15px;
+    border-radius:10px;
+    margin-top:20px;
+    display:none;
+}
+.error{
+    background:#fee2e2;
+    color:#7f1d1d;
+    padding:15px;
+    border-radius:10px;
+    margin-top:20px;
+    display:none;
+}
+.back{
+    margin-top:20px;
+}
+.back a{
+    color:#2563eb;
+    text-decoration:none;
+    font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="reset-box">
+
+    <!-- LOGO -->
+    <img src="logo.png" alt="SIBAWE Bank">
+
+    <h2>Réinitialisation d’accès</h2>
+    <p>
+        Pour des raisons de sécurité bancaire, la récupération d’accès est gérée uniquement par votre Responsable de relation.
+        <br><br>
+        Veuillez saisir le <b>code RM</b> fourni par votre gestionnaire.
+    </p>
+
+    <input type="text" id="rmCode" placeholder="Code du Responsable (ex: RM-984-DB)">
+
+    <button class="action-btn" onclick="verifyRM()">Vérifier le code</button>
+
+    <div class="success" id="success">
+        Code valide.<br><br>
+        Votre accès a été réinitialisé.<br>
+        Vous pouvez vous reconnecter à votre espace client.
+    </div>
+
+    <div class="error" id="error">
+        Code RM invalide. Veuillez contacter votre gestionnaire de relation.
+    </div>
+
+    <div class="back">
+        <a href="login.html">← Retour à la page de connexion</a>
+    </div>
+
+</div>
+
+<script>
+function verifyRM(){
+    const code = document.getElementById("rmCode").value;
+
+    if(code === "RM-984-DB"){
+        localStorage.removeItem("accountStatus");
+        localStorage.removeItem("blockReason");
+        localStorage.removeItem("transactions");
+        localStorage.setItem("unreadCount","0");
+
+        document.getElementById("success").style.display="block";
+        document.getElementById("error").style.display="none";
+    }else{
+        document.getElementById("error").style.display="block";
+    }
+}
+</script>
+
+</body>
+</html>

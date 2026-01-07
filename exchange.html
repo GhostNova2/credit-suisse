@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>SIBAWE Bank – Change de devises</title>
+
+<style>
+body {
+    margin:0;
+    font-family:"Segoe UI", Arial, sans-serif;
+    background:#eef2f7;
+}
+
+.header {
+    background:#0a1f44;
+    color:white;
+    padding:20px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.header a {
+    color:#cbd5e1;
+    text-decoration:none;
+}
+
+.container {
+    padding:40px;
+    max-width:800px;
+    margin:auto;
+}
+
+.box {
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.group {
+    margin-bottom:20px;
+}
+
+label {
+    display:block;
+    font-size:14px;
+    margin-bottom:6px;
+    color:#374151;
+}
+
+select, input {
+    width:100%;
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:14px;
+}
+
+.rate {
+    background:#f9fafb;
+    padding:15px;
+    border-radius:8px;
+    font-size:14px;
+    margin-bottom:20px;
+}
+
+button {
+    width:100%;
+    padding:14px;
+    background:#0a1f44;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+button:hover { background:#1e3a8a; }
+
+.success {
+    margin-top:20px;
+    padding:15px;
+    background:#dcfce7;
+    color:#166534;
+    border-radius:8px;
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>SIBAWE Private Bank</h2>
+    <a href="dashboard.html">← Retour au tableau de bord</a>
+</div>
+
+<div class="container">
+    <h2>Change de devises</h2>
+    <p style="color:#6b7280;">Convertissez vos fonds entre les principales devises internationales.</p>
+
+    <div class="box">
+
+        <div class="group">
+            <label>Devise d’origine</label>
+            <select id="from" onchange="calculate()">
+                <option value="CHF">CHF – Franc suisse</option>
+                <option value="USD">USD – Dollar américain</option>
+                <option value="EUR">EUR – Euro</option>
+                <option value="GBP">GBP – Livre sterling</option>
+                <option value="CAD">CAD – Dollar canadien</option>
+                <option value="JPY">JPY – Yen japonais</option>
+            </select>
+        </div>
+
+        <div class="group">
+            <label>Devise de destination</label>
+            <select id="to" onchange="calculate()">
+                <option value="USD">USD – Dollar américain</option>
+                <option value="EUR">EUR – Euro</option>
+                <option value="CHF">CHF – Franc suisse</option>
+                <option value="GBP">GBP – Livre sterling</option>
+                <option value="CAD">CAD – Dollar canadien</option>
+                <option value="JPY">JPY – Yen japonais</option>
+            </select>
+        </div>
+
+        <div class="group">
+            <label>Montant</label>
+            <input type="number" id="amount" placeholder="10000" oninput="calculate()">
+        </div>
+
+        <div class="rate" id="result">
+            Saisissez un montant pour voir la conversion.
+        </div>
+
+        <button onclick="exchange()">Exécuter le change</button>
+
+        <div class="success" id="success">
+            Opération de change exécutée avec succès. Les fonds ont été convertis.
+        </div>
+
+    </div>
+</div>
+
+<script>
+const rates = {
+  CHF: { USD:1.12, EUR:1.03, GBP:0.89, CAD:1.52, JPY:165.3 },
+  USD: { CHF:0.89, EUR:0.92, GBP:0.79, CAD:1.36, JPY:147.2 },
+  EUR: { CHF:0.97, USD:1.08, GBP:0.86, CAD:1.47, JPY:159.4 },
+  GBP: { CHF:1.12, USD:1.26, EUR:1.16, CAD:1.72, JPY:184.9 },
+  CAD: { CHF:0.66, USD:0.74, EUR:0.68, GBP:0.58, JPY:108.5 },
+  JPY: { CHF:0.006, USD:0.0068, EUR:0.0063, GBP:0.0054, CAD:0.009 }
+};
+
+function calculate() {
+  const from = document.getElementById("from").value;
+  const to = document.getElementById("to").value;
+  const amount = parseFloat(document.getElementById("amount").value);
+
+  if (!amount || from === to || !rates[from][to]) return;
+
+  const converted = (amount * rates[from][to]).toFixed(2);
+  document.getElementById("result").innerHTML =
+    `Taux : 1 ${from} = ${rates[from][to]} ${to}<br>
+     Montant estimé reçu : <b>${converted} ${to}</b>`;
+}
+
+function exchange() {
+  document.getElementById("success").style.display = "block";
+}
+</script>
+
+</body>
+</html>

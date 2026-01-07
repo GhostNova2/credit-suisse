@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CREDIT SUISSE</title>
+
+<style>
+body {
+    margin:0;
+    font-family:"Segoe UI", Arial, sans-serif;
+    background:#eef2f7;
+}
+
+.header {
+    background:#0a1f44;
+    color:white;
+    padding:20px 40px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.header a { color:#cbd5e1; text-decoration:none; }
+
+.container {
+    padding:40px;
+    max-width:1000px;
+    margin:auto;
+}
+
+.box {
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    margin-bottom:30px;
+}
+
+h2 { margin-top:0; }
+
+.status {
+    padding:8px 15px;
+    background:#dcfce7;
+    color:#166534;
+    border-radius:20px;
+    font-size:13px;
+    display:inline-block;
+}
+
+.upload input {
+    padding:10px;
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+}
+
+th, td {
+    padding:12px;
+    border-top:1px solid #e5e7eb;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>CREDIT SUISSE</h2>
+    <a href="dashboard.html">← Back to Dashboard</a>
+</div>
+
+<div class="container">
+
+    <div class="box">
+        <h2>KYC Status</h2>
+        <p>Status: <span class="status">Verified</span></p>
+        <p>Client: Anne Marie Dupond</p>
+        <p>Account Type: Private Banking</p>
+    </div>
+
+    <div class="box upload">
+        <h2>Upload Documents</h2>
+        <p>Upload passport, ID card or proof of address.</p>
+        <input type="file">
+    </div>
+
+    <div class="box">
+        <h2>Stored Documents</h2>
+        <table>
+            <tr>
+                <th>Document</th>
+                <th>Type</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td>Passport.pdf</td>
+                <td>Identity</td>
+                <td>Approved</td>
+            </tr>
+            <tr>
+                <td>UtilityBill.pdf</td>
+                <td>Address</td>
+                <td>Approved</td>
+            </tr>
+            <tr>
+                <td>AccountContract.pdf</td>
+                <td>Contract</td>
+                <td>Signed</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="box">
+        <h2>Bank Statements</h2>
+        <table>
+            <tr>
+                <th>Statement</th>
+                <th>Period</th>
+                <th>Download</th>
+            </tr>
+            <tr>
+                <td>Statement_Q4_2025.pdf</td>
+                <td>Oct – Dec 2025</td>
+                <td><a href="#">Download</a></td>
+            </tr>
+            <tr>
+                <td>Statement_Q1_2026.pdf</td>
+                <td>Jan – Mar 2026</td>
+                <td><a href="#">Download</a></td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

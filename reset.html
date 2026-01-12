@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Private Bank – Réinitialisation sécurisée</title>
+<title>SIBAWE Bank – Réinitialisation sécurisée</title>
 <link rel="stylesheet" href="styles.css">
 <style>
 .reset-box{
@@ -86,20 +86,25 @@
     </div>
 
     <div class="back">
-        <a href="login.html">← Retour à la page de connexion</a>
+        <a href="index.html">← Retour à la page de connexion</a>
     </div>
 
 </div>
 
 <script>
+const VALID_RM_CODE = "RM-984-DB";
+
 function verifyRM(){
     const code = document.getElementById("rmCode").value;
 
-    if(code === "RM-984-DB"){
+    if(code === VALID_RM_CODE){
+
+        // 🔓 Réinitialisation bancaire
         localStorage.removeItem("accountStatus");
         localStorage.removeItem("blockReason");
         localStorage.removeItem("transactions");
         localStorage.setItem("unreadCount","0");
+        localStorage.removeItem("isLoggedIn");
 
         document.getElementById("success").style.display="block";
         document.getElementById("error").style.display="none";

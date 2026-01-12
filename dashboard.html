@@ -1,9 +1,17 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Bank – Tableau de bord</title>
+<title>SIBAWE Bank – Tableau de bord</title>
 <link rel="stylesheet" href="styles.css">
+
+<script>
+// 🔐 Protection de session
+if (localStorage.getItem("isLoggedIn") !== "true") {
+    window.location.href = "login.html";
+}
+</script>
+
 </head>
 
 <body>
@@ -25,7 +33,7 @@
             <a href="withdraw.html">Retrait</a>
             <a href="documents.html">Documents</a>
             <a href="#" onclick="openSupport()">Responsable : Daniel Weber</a>
-            <a href="#" style="color:#dc2626;" onclick="openLogout()">Déconnexion</a>
+            <a href="#" onclick="logout()" style="color:#dc2626;font-weight:700;">Déconnexion</a>
         </div>
     </div>
 </div>
@@ -91,7 +99,7 @@
 
 </div>
 
-<!-- SUPPORT -->
+<!-- MODAL SUPPORT -->
 <div id="supportModal" class="modal">
   <div class="modal-box">
     <h3>Compte sous restriction</h3>
@@ -103,25 +111,12 @@
   </div>
 </div>
 
-<!-- HISTORIQUE -->
+<!-- MODAL HISTORIQUE -->
 <div id="historyModal" class="modal">
   <div class="modal-box">
     <h3>Historique des transactions</h3>
     <div id="historyContent"></div>
     <button class="action-btn" onclick="closeHistory()">Fermer</button>
-  </div>
-</div>
-
-<!-- LOGOUT -->
-<div id="logoutModal" class="modal">
-  <div class="modal-box">
-    <h3>Confirmer la déconnexion</h3>
-    <p>Pour des raisons de sécurité, veuillez confirmer votre identité.</p>
-
-    <input type="text" id="logoutUser" placeholder="Identifiant bancaire" style="width:100%;padding:10px;margin:10px 0;">
-    <input type="password" id="logoutPass" placeholder="Mot de passe" style="width:100%;padding:10px;margin-bottom:15px;">
-
-    <button class="action-btn" onclick="confirmLogout()">Se déconnecter</button>
   </div>
 </div>
 
@@ -131,56 +126,61 @@ function toggleMenu(){
   menu.style.display = menu.style.display === "block" ? "none" : "block";
 }
 
-function openSupport(){ document.getElementById("supportModal").style.display="block"; }
-function closeSupport(){ document.getElementById("supportModal").style.display="none"; }
+function openSupport(){
+  document.getElementById("supportModal").style.display="block";
+}
+function closeSupport(){
+  document.getElementById("supportModal").style.display="none";
+}
 
 function openHistory(){
   document.getElementById("historyModal").style.display="block";
   localStorage.setItem("unreadCount","0");
   document.getElementById("notifBadge").style.display = "none";
 }
-function closeHistory(){ document.getElementById("historyModal").style.display="none"; }
-
-function openLogout(){
-  document.getElementById("logoutModal").style.display="block";
+function closeHistory(){
+  document.getElementById("historyModal").style.display="none";
 }
 
-function confirmLogout(){
-  const user = document.getElementById("logoutUser").value;
-  const pass = document.getElementById("logoutPass").value;
-
-  if(user && pass){
-      window.location.href = "login.html";
-  } else {
-      alert("Veuillez saisir vos informations bancaires.");
-  }
+// 🚪 Déconnexion réelle
+function logout(){
+    localStorage.removeItem("isLoggedIn");
+    window.location.href = "login.html";
 }
 
-/* HISTORIQUE */
+/* ===== HISTORIQUE ===== */
 const history = JSON.parse(localStorage.getItem("transactions") || "[]");
-let html="";
-history.forEach(t=>{
-  html += `<p>${t.date} — ${t.type} — ${t.amount} — <span class="negative">${t.status}</span></p>`;
-});
-document.getElementById("historyContent").innerHTML = html;
 
-/* NOTIF */
+/* ===== NOTIFICATION ===== */
 const unread = localStorage.getItem("unreadCount") || "0";
 if(unread !== "0"){
-  document.getElementById("notifBadge").style.display="inline-block";
-  document.getElementById("notifBadge").innerText = unread;
+    document.getElementById("notifBadge").style.display = "inline-block";
+    document.getElementById("notifBadge").innerText = unread;
 } else {
-  document.getElementById("notifBadge").style.display="none";
+    document.getElementById("notifBadge").style.display = "none";
 }
 
-/* BLOCAGE */
-if(localStorage.getItem("accountStatus")==="blocked"){
-  const alert = document.getElementById("accountAlert");
-  alert.style.display="block";
-  alert.innerText="Votre compte est bloqué suite à un échec de transaction.";
-  document.getElementById("transferBtn").classList.add("disabled");
-  document.getElementById("exchangeBtn").classList.add("disabled");
+/* ===== STATUT DU COMPTE ===== */
+const isBlocked = localStorage.getItem("accountStatus") === "blocked";
+
+if(isBlocked){
+    const alert = document.getElementById("accountAlert");
+    alert.style.display = "block";
+    alert.innerText =
+      "Votre compte est bloqué suite à l’échec d’un virement international. Des taxes et obligations fiscales associées n’ont pas été réglées.";
+
+    document.getElementById("transferBtn").classList.add("disabled");
+    document.getElementById("exchangeBtn").classList.add("disabled");
+} else {
+    document.getElementById("accountAlert").style.display = "none";
 }
+
+/* ===== AFFICHAGE HISTORIQUE ===== */
+let html = "";
+history.forEach(t=>{
+    html += `<p>${t.date} — ${t.type} — ${t.amount} — <span class="negative">${t.status}</span></p>`;
+});
+document.getElementById("historyContent").innerHTML = html;
 </script>
 
 </body>

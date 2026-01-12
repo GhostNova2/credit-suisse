@@ -2,16 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>SIBAWE Bank – Tableau de bord</title>
+<title>Bank – Tableau de bord</title>
 <link rel="stylesheet" href="styles.css">
-
-<script>
-// 🔐 Protection de session
-if (localStorage.getItem("isLoggedIn") !== "true") {
-    window.location.href = "login.html";
-}
-</script>
-
 </head>
 
 <body>
@@ -33,7 +25,6 @@ if (localStorage.getItem("isLoggedIn") !== "true") {
             <a href="withdraw.html">Retrait</a>
             <a href="documents.html">Documents</a>
             <a href="#" onclick="openSupport()">Responsable : Daniel Weber</a>
-            <a href="#" onclick="logout()" style="color:#dc2626;font-weight:700;">Déconnexion</a>
         </div>
     </div>
 </div>
@@ -68,11 +59,13 @@ if (localStorage.getItem("isLoggedIn") !== "true") {
         </div>
     </div>
 
+    <!-- ACTIONS PRINCIPALES -->
     <div class="actions" style="max-width:400px;margin:40px auto;">
         <a id="transferBtn" href="transfer.html" class="action-btn">Transfert</a>
         <a id="exchangeBtn" href="exchange.html" class="action-btn">Échange</a>
     </div>
 
+    <!-- TABLEAU DES PORTEFEUILLES -->
     <div class="table">
         <h3>Portefeuilles</h3>
         <table>
@@ -140,12 +133,6 @@ function openHistory(){
 }
 function closeHistory(){
   document.getElementById("historyModal").style.display="none";
-}
-
-// 🚪 Déconnexion réelle
-function logout(){
-    localStorage.removeItem("isLoggedIn");
-    window.location.href = "login.html";
 }
 
 /* ===== HISTORIQUE ===== */

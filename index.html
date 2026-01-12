@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>CREDIT SUISSE – Accès client</title>
+<title>BANQUE – Accès client</title>
 <link rel="stylesheet" href="styles.css">
 <style>
 .login-box{
@@ -64,7 +64,7 @@
     <img src="logoo.png" alt="SIBAWE Bank">
 
     <h2>Accès client</h2>
-    <p>Espace sécurisé – CREDIT SUISSE</p>
+    <p>Espace sécurisé – SIBAWE Bank</p>
 
     <input type="text" id="userId" placeholder="Identifiant client">
     <input type="password" id="password" placeholder="Mot de passe">
@@ -80,20 +80,30 @@
     </div>
 
     <div class="footer">
-        © UBS 2026. Tous droits réservés.
+        © SIBAWE 2026. Tous droits réservés.
     </div>
 
 </div>
 
 <script>
+/* ============================
+   IDENTIFIANTS BANCAIRES
+============================ */
 const VALID_ID = "CH-947201";
 const VALID_PASS = "Annelevi26";
 
+/* ============================
+   CONNEXION CLIENT
+============================ */
 function login(){
     const id = document.getElementById("userId").value;
     const pass = document.getElementById("password").value;
 
     if(id === VALID_ID && pass === VALID_PASS){
+        // 🔐 Création de la session bancaire
+        localStorage.setItem("isLoggedIn", "true");
+
+        // Redirection sécurisée
         window.location.href = "dashboard.html";
     }else{
         document.getElementById("error").style.display="block";
@@ -103,4 +113,3 @@ function login(){
 
 </body>
 </html>
-

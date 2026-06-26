@@ -1,5 +1,5 @@
 const BANK = {
-    clientName: 'Nicolas Faure',
+    clientName: 'Anne Marie DUPOND',
     clientId: 'CH-947201',
     rmName: 'Daniel Weber',
     totalWealth: 170000,

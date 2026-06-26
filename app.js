@@ -2,8 +2,8 @@ const BANK = {
     clientName: 'Anne Marie DUPOND',
     clientId: 'CH-947201',
     rmName: 'Daniel Weber',
-    totalWealth: 4370000,
-    cash: 1370000,
+    totalWealth: 4369 400,
+    cash: 1369 400,
     investments: 3000000,
     performance: -35900,
     performancePct: -3.1

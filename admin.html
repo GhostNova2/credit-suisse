@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BANK SUISSE – Console Admin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<script>
+if (sessionStorage.getItem('adminAccessGranted') !== 'true') {
+    window.location.href = 'dashboard.html';
+}
+</script>
+
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <h2>BANK SUISSE</h2>
+        <p>Console d'administration</p>
+        <a href="#" class="active" onclick="showSection('dashboard');return false"><span data-icon="dashboard" data-icon-size="18"></span> Tableau de bord</a>
+        <a href="#" onclick="showSection('transfers');return false"><span data-icon="transfer" data-icon-size="18"></span> Virements</a>
+        <a href="#" onclick="showSection('kyc');return false"><span data-icon="shield" data-icon-size="18"></span> KYC</a>
+        <a href="#" onclick="showSection('clients');return false"><span data-icon="users" data-icon-size="18"></span> Clients</a>
+        <a href="dashboard.html"><span data-icon="monitor" data-icon-size="18"></span> Vue client</a>
+    </aside>
+
+    <main class="admin-main">
+        <div id="section-dashboard">
+            <h1 class="page-title">Tableau de bord admin</h1>
+            <p class="page-subtitle">Vue d'ensemble des opérations en cours</p>
+
+            <div class="stat-grid" style="margin-top:28px">
+                <div class="stat-card"><h4>Clients actifs</h4><div class="num">1 247</div></div>
+                <div class="stat-card"><h4>Virements en attente</h4><div class="num" id="pendingCount">2</div></div>
+                <div class="stat-card"><h4>KYC à vérifier</h4><div class="num">3</div></div>
+                <div class="stat-card"><h4>Volume du jour</h4><div class="num">CHF 4.2M</div></div>
+            </div>
+        </div>
+
+        <div id="section-transfers" style="display:none">
+            <h1 class="page-title">Virements en attente</h1>
+            <p class="page-subtitle">Validation des transferts internationaux</p>
+
+            <div class="card" style="margin-top:28px">
+                <table id="transfersTable">
+                    <tr><th>Client</th><th>Montant</th><th>Destination</th><th>Statut</th><th>Action</th></tr>
+                    <tr id="transfer-1">
+                        <td>Nicolas Faure</td>
+                        <td>CHF 120 000</td>
+                        <td>Bank of America</td>
+                        <td><span class="badge badge-warning">En revue</span></td>
+                        <td>
+                            <button class="btn-sm btn-approve" onclick="approveTransfer(1)">Approuver</button>
+                            <button class="btn-sm btn-reject" onclick="rejectTransfer(1)">Rejeter</button>
+                        </td>
+                    </tr>
+                    <tr id="transfer-2">
+                        <td>Marie Dupont</td>
+                        <td>CHF 45 000</td>
+                        <td>Deutsche Bank</td>
+                        <td><span class="badge badge-warning">En revue</span></td>
+                        <td>
+                            <button class="btn-sm btn-approve" onclick="approveTransfer(2)">Approuver</button>
+                            <button class="btn-sm btn-reject" onclick="rejectTransfer(2)">Rejeter</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="section-kyc" style="display:none">
+            <h1 class="page-title">Vérification KYC</h1>
+            <p class="page-subtitle">Documents d'identité en attente de validation</p>
+
+            <div class="card" style="margin-top:28px">
+                <table>
+                    <tr><th>Client</th><th>Document</th><th>Date</th><th>Statut</th><th>Action</th></tr>
+                    <tr id="kyc-1">
+                        <td>Jean Martin</td>
+                        <td>Passeport</td>
+                        <td>20 juin 2026</td>
+                        <td><span class="badge badge-warning">En attente</span></td>
+                        <td>
+                            <button class="btn-sm btn-approve" onclick="approveKyc(1)">Approuver</button>
+                            <button class="btn-sm btn-reject" onclick="rejectKyc(1)">Rejeter</button>
+                        </td>
+                    </tr>
+                    <tr id="kyc-2">
+                        <td>Sophie Laurent</td>
+                        <td>Justificatif domicile</td>
+                        <td>19 juin 2026</td>
+                        <td><span class="badge badge-warning">En attente</span></td>
+                        <td>
+                            <button class="btn-sm btn-approve" onclick="approveKyc(2)">Approuver</button>
+                            <button class="btn-sm btn-reject" onclick="rejectKyc(2)">Rejeter</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="section-clients" style="display:none">
+            <h1 class="page-title">Clients</h1>
+            <p class="page-subtitle">Liste des clients Private Banking</p>
+
+            <div class="card" style="margin-top:28px">
+                <table>
+                    <tr><th>Nom</th><th>ID</th><th>Patrimoine</th><th>Statut</th><th>RM</th></tr>
+                    <tr>
+                        <td>Nicolas Faure</td>
+                        <td>CH-947201</td>
+                        <td>€ 170 000</td>
+                        <td><span class="badge badge-danger" id="clientStatus">Restreint</span></td>
+                        <td>Daniel Weber</td>
+                    </tr>
+                    <tr>
+                        <td>Marie Dupont</td>
+                        <td>CH-883412</td>
+                        <td>€ 2 400 000</td>
+                        <td><span class="badge badge-success">Actif</span></td>
+                        <td>Claire Müller</td>
+                    </tr>
+                    <tr>
+                        <td>Jean Martin</td>
+                        <td>CH-772901</td>
+                        <td>€ 890 000</td>
+                        <td><span class="badge badge-success">Actif</span></td>
+                        <td>Daniel Weber</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card" style="margin-top:20px">
+                <h3 style="color:var(--primary)">Actions rapides — Nicolas Faure</h3>
+                <p style="color:var(--text-muted);font-size:14px">Débloquer le compte client après régularisation fiscale</p>
+                <button class="action-btn" onclick="unblockClient()" style="margin-top:12px">Débloquer le compte</button>
+                <div class="success-msg" id="unblockSuccess" style="display:none">Compte débloqué avec succès.</div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="icons.js"></script>
+<script>
+function showSection(name) {
+    ['dashboard','transfers','kyc','clients'].forEach(s => {
+        document.getElementById('section-' + s).style.display = s === name ? 'block' : 'none';
+    });
+    document.querySelectorAll('.admin-sidebar a').forEach(a => a.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function approveTransfer(id) {
+    const row = document.getElementById('transfer-' + id);
+    row.querySelector('.badge').className = 'badge badge-success';
+    row.querySelector('.badge').innerText = 'Approuvé';
+    row.querySelector('td:last-child').innerHTML = '—';
+    updatePending();
+}
+
+function rejectTransfer(id) {
+    const row = document.getElementById('transfer-' + id);
+    row.querySelector('.badge').className = 'badge badge-danger';
+    row.querySelector('.badge').innerText = 'Rejeté';
+    row.querySelector('td:last-child').innerHTML = '—';
+    updatePending();
+}
+
+function approveKyc(id) {
+    const row = document.getElementById('kyc-' + id);
+    row.querySelector('.badge').className = 'badge badge-success';
+    row.querySelector('.badge').innerText = 'Approuvé';
+    row.querySelector('td:last-child').innerHTML = '—';
+}
+
+function rejectKyc(id) {
+    const row = document.getElementById('kyc-' + id);
+    row.querySelector('.badge').className = 'badge badge-danger';
+    row.querySelector('.badge').innerText = 'Rejeté';
+    row.querySelector('td:last-child').innerHTML = '—';
+}
+
+function updatePending() {
+    const pending = document.querySelectorAll('#transfersTable .badge-warning').length;
+    document.getElementById('pendingCount').innerText = pending;
+}
+
+function unblockClient() {
+    localStorage.removeItem('accountStatus');
+    localStorage.removeItem('blockReason');
+    document.getElementById('unblockSuccess').style.display = 'block';
+    const status = document.getElementById('clientStatus');
+    status.className = 'badge badge-success';
+    status.innerText = 'Actif';
+}
+
+if (localStorage.getItem('accountStatus') !== 'blocked') {
+    const status = document.getElementById('clientStatus');
+    if (status) { status.className = 'badge badge-success'; status.innerText = 'Actif'; }
+}
+</script>
+</body>
+</html>

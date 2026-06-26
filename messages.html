@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CREDIT SUISSE – Messages</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<script src="icons.js"></script>
+<script src="app.js"></script>
+<script>checkSession(); initBank();</script>
+<div id="app"></div>
+
+<script>
+function seedMessages() {
+    const messages = getMessages();
+    if (messages.length) return messages;
+    const seeded = [
+        {
+            from: 'rm',
+            author: BANK.rmName,
+            text: 'Bonjour Monsieur Faure, je reste à votre disposition pour toute demande liée à votre portefeuille ou à vos opérations internationales.',
+            date: bankNow(),
+            status: 'Disponible'
+        }
+    ];
+    localStorage.setItem('messages', JSON.stringify(seeded));
+    return seeded;
+}
+
+const content = `
+    <div class="page-title">Messages</div>
+    <div class="page-subtitle">Conversation sécurisée avec votre gestionnaire Daniel Weber</div>
+
+    <section class="messages-shell">
+        <aside class="rm-panel">
+            <div class="avatar rm-avatar">DW</div>
+            <h3>Daniel Weber</h3>
+            <p>Senior Relationship Manager — Genève</p>
+            <div class="rm-status"><span></span> Disponible aujourd’hui</div>
+            <div class="rm-meta">
+                <div><strong>Dossier client</strong><span>${BANK.clientId}</span></div>
+                <div><strong>Niveau de service</strong><span>Private Banking</span></div>
+                <div><strong>Canal</strong><span>Messagerie sécurisée</span></div>
+            </div>
+        </aside>
+
+        <div class="message-card">
+            <div class="message-header">
+                <div>
+                    <h3>Discussion client / gestionnaire</h3>
+                    <p>Les demandes sont historisées et transmises au gestionnaire.</p>
+                </div>
+                <span class="badge badge-success">Sécurisé</span>
+            </div>
+
+            <div id="messageThread" class="message-thread"></div>
+
+            <div class="message-compose">
+                <textarea id="messageText" rows="3" placeholder="Écrire un message à Daniel Weber..."></textarea>
+                <button class="action-btn" onclick="sendClientMessage()">Envoyer</button>
+            </div>
+            <div class="success-msg" id="messageSent" style="display:none">Message envoyé. Daniel Weber a été notifié.</div>
+        </div>
+    </section>
+`;
+
+document.getElementById('app').innerHTML = renderAppLayout('messages.html', content);
+
+function renderMessages() {
+    const thread = document.getElementById('messageThread');
+    const messages = seedMessages();
+    thread.innerHTML = messages.map(m => `
+        <div class="message-row ${m.from === 'client' ? 'client' : 'rm'}">
+            <div class="message-bubble">
+                <div class="message-author">${escapeHtml(m.author)}</div>
+                <p>${escapeHtml(m.text)}</p>
+                <span>${escapeHtml(m.date)} · ${escapeHtml(m.status)}</span>
+            </div>
+        </div>
+    `).join('');
+    thread.scrollTop = thread.scrollHeight;
+}
+
+function sendClientMessage() {
+    const input = document.getElementById('messageText');
+    const text = input.value.trim();
+    if (!text) return;
+    const messages = getMessages();
+    const message = {
+        from: 'client',
+        author: BANK.clientName,
+        text,
+        date: bankNow(),
+        status: 'Gestionnaire notifié'
+    };
+    messages.push(message);
+    localStorage.setItem('messages', JSON.stringify(messages));
+
+    const event = addBankEvent({
+        prefix: 'MSG',
+        type: 'Message gestionnaire',
+        title: 'Message envoyé à Daniel Weber',
+        amount: 'Messagerie sécurisée',
+        status: 'Réponse en attente',
+        details: text.slice(0, 80),
+        notification: 'Votre message a été reçu par votre gestionnaire.',
+        operationType: 'Message gestionnaire',
+        currentStep: 'Affectation gestionnaire',
+        icon: 'mail'
+    });
+    sendMessageEmail({
+        reference: event.reference,
+        message: text,
+        status: event.status
+    });
+
+    input.value = '';
+    document.getElementById('messageSent').style.display = 'block';
+    renderMessages();
+}
+
+renderMessages();
+</script>
+</body>
+</html>

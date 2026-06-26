@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CREDIT SUISSE – Accès client</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="auth-page">
+    <div class="auth-hero">
+        <h1>Votre patrimoine,<br>notre excellence.</h1>
+        <p>Accédez à votre espace privé CREDIT SUISSE — gestion de fortune, investissements et services bancaires premium, où que vous soyez.</p>
+            <div class="auth-features">
+            <div class="auth-feature"><div class="fi" data-icon="lock"></div> Connexion sécurisée SSL 256 bits</div>
+            <div class="auth-feature"><div class="fi" data-icon="globe"></div> Virements internationaux SWIFT</div>
+            <div class="auth-feature"><div class="fi" data-icon="invest"></div> Gestion de portefeuille en temps réel</div>
+            <div class="auth-feature"><div class="fi" data-icon="card"></div> Cartes premium & change multi-devises</div>
+        </div>
+    </div>
+
+    <div class="auth-panel">
+        <div class="login-box">
+        <img class="login-logo" src="log.png" alt="CREDIT SUISSE" onerror="this.style.display='none'">
+
+        <h2 class="login-title">Accès client</h2>
+
+        <p class="login-subtitle">
+            Espace sécurisé CREDIT SUISSE
+        </p>
+
+            <label for="userId">Identifiant client</label>
+            <input type="text" id="userId" placeholder="CH-947201">
+
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" placeholder="••••••••••">
+
+            <button class="action-btn" onclick="login()" style="width:100%;margin-top:8px">Se connecter</button>
+
+            <div class="error-msg" id="error">Identifiant ou mot de passe incorrect.</div>
+
+            <div class="forgot">
+                <a href="reset.html">Mot de passe oublié ?</a>
+            </div>
+
+            <div class="footer-note">© CREDIT SUISSE 2026. Tous droits réservés.</div>
+        </div>
+    </div>
+</div>
+
+<script src="icons.js"></script>
+<script>
+const VALID_ID = 'CH-947201';
+const VALID_PASS = 'FAURE68-N573';
+
+function login() {
+    const id = document.getElementById('userId').value.trim();
+    const pass = document.getElementById('password').value;
+    if (id === VALID_ID && pass === VALID_PASS) {
+        localStorage.setItem('isLoggedIn', 'true');
+        window.location.href = 'dashboard.html';
+    } else {
+        document.getElementById('error').style.display = 'block';
+    }
+}
+
+document.getElementById('password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') login();
+});
+</script>
+</body>
+</html>

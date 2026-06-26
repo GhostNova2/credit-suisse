@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CREDIT SUISSE – Change de devises</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<script src="icons.js"></script>
+<script src="app.js"></script>
+<script>checkSession();</script>
+<div id="app"></div>
+
+<script>
+const rates = {
+    CHF: { USD:1.12, EUR:1.03, GBP:0.89, CAD:1.52, JPY:165.3 },
+    USD: { CHF:0.89, EUR:0.92, GBP:0.79, CAD:1.36, JPY:147.2 },
+    EUR: { CHF:0.97, USD:1.08, GBP:0.86, CAD:1.47, JPY:159.4 },
+    GBP: { CHF:1.12, USD:1.26, EUR:1.16, CAD:1.72, JPY:184.9 },
+    CAD: { CHF:0.66, USD:0.74, EUR:0.68, GBP:0.58, JPY:108.5 },
+    JPY: { CHF:0.006, USD:0.0068, EUR:0.0063, GBP:0.0054, CAD:0.009 }
+};
+
+const content = `
+    <div class="page-title">Change de devises</div>
+    <div class="page-subtitle">Convertissez vos fonds entre les principales devises internationales</div>
+
+    <div class="grid-2 exchange-layout" style="align-items:start">
+        <div class="form-box exchange-form">
+            <div class="exchange-pair">
+            <div class="group exchange-currency-field">
+                <label>Devise d'origine</label>
+                <select id="from" onchange="calculate()">
+                    <option value="CHF">CHF – Franc suisse</option>
+                    <option value="USD">USD – Dollar américain</option>
+                    <option value="EUR">EUR – Euro</option>
+                    <option value="GBP">GBP – Livre sterling</option>
+                    <option value="CAD">CAD – Dollar canadien</option>
+                    <option value="JPY">JPY – Yen japonais</option>
+                </select>
+            </div>
+
+            <div class="exchange-swap-row">
+                <button class="action-btn outline swap-btn" onclick="swapCurrencies()">${icon('swap', { size: 18 })}</button>
+            </div>
+
+            <div class="group exchange-currency-field">
+                <label>Devise de destination</label>
+                <select id="to" onchange="calculate()">
+                    <option value="USD">USD – Dollar américain</option>
+                    <option value="EUR">EUR – Euro</option>
+                    <option value="CHF">CHF – Franc suisse</option>
+                    <option value="GBP">GBP – Livre sterling</option>
+                    <option value="CAD">CAD – Dollar canadien</option>
+                    <option value="JPY">JPY – Yen japonais</option>
+                </select>
+            </div>
+
+            </div>
+
+            <div class="group">
+                <label>Montant</label>
+                <input type="number" id="amount" value="5000" placeholder="5000" oninput="calculate()">
+            </div>
+
+            <div class="card exchange-result" id="result" style="background:var(--accent-soft);border-color:rgba(201,162,39,0.3);margin-bottom:20px">
+                Saisissez un montant pour voir la conversion.
+            </div>
+
+            <button class="action-btn" id="exchangeBtn" onclick="exchange()" style="width:100%">Exécuter le change</button>
+
+            <div class="success-msg" id="success" style="display:none">
+                Opération de change exécutée avec succès. Les fonds ont été convertis sur votre compte.
+            </div>
+        </div>
+
+        <div>
+            <div class="card exchange-rates-card">
+                <h3 style="margin:0 0 16px;color:var(--primary)">Taux en direct</h3>
+                <table>
+                    <tr><th>Paire</th><th>Taux</th><th>Variation</th></tr>
+                    <tr><td>EUR/CHF</td><td>0.97</td><td class="positive">+0.12%</td></tr>
+                    <tr><td>USD/CHF</td><td>0.89</td><td class="negative">-0.08%</td></tr>
+                    <tr><td>GBP/CHF</td><td>1.12</td><td class="positive">+0.05%</td></tr>
+                    <tr><td>CHF/JPY</td><td>165.3</td><td class="positive">+0.21%</td></tr>
+                </table>
+            </div>
+            <div class="card exchange-accounts-card" style="margin-top:20px">
+                <h3 style="margin:0 0 12px;color:var(--primary)">Comptes multi-devises</h3>
+                <div class="tx-item"><div class="tx-info"><strong>CHF</strong><span>Compte principal</span></div><div class="tx-amount">CHF 45 200</div></div>
+                <div class="tx-item"><div class="tx-info"><strong>EUR</strong><span>Compte courant</span></div><div class="tx-amount">€ 18 500</div></div>
+                <div class="tx-item"><div class="tx-info"><strong>USD</strong><span>Compte investissement</span></div><div class="tx-amount">$ 12 300</div></div>
+            </div>
+        </div>
+    </div>
+`;
+
+document.getElementById('app').innerHTML = renderAppLayout('exchange.html', content);
+applyBlockedState();
+
+function calculate() {
+    const from = document.getElementById('from').value;
+    const to = document.getElementById('to').value;
+    const amount = parseFloat(document.getElementById('amount').value);
+    if (!amount || from === to || !rates[from]?.[to]) return;
+    const converted = (amount * rates[from][to]).toFixed(2);
+    document.getElementById('result').innerHTML =
+        `<div class="result-label">Montant reçu</div>
+         <div class="result-main">${Number(converted).toLocaleString('fr-FR')} ${to}</div>
+         <div class="result-rate">1 ${from} = ${rates[from][to]} ${to} · Frais 0.15%</div>`;
+}
+
+function swapCurrencies() {
+    const from = document.getElementById('from');
+    const to = document.getElementById('to');
+    const tmp = from.value;
+    from.value = to.value;
+    to.value = tmp;
+    calculate();
+}
+
+function exchange() {
+    if (isAccountBlocked()) { openSupport(); return; }
+    document.getElementById('success').style.display = 'block';
+    const from = document.getElementById('from').value;
+    const to = document.getElementById('to').value;
+    const amount = document.getElementById('amount').value || '10000';
+    const event = addBankEvent({
+        prefix: 'CHG',
+        type: `Change ${from} → ${to}`,
+        title: 'Ordre de change enregistré',
+        amount: `${from} ${Number(amount).toLocaleString('fr-FR')}`,
+        status: 'Exécuté',
+        details: 'Traitement multi-devises confirmé',
+        notification: `Votre opération de change ${from} vers ${to} a été traitée et confirmée.`,
+        operationType: 'Change de devises',
+        currentStep: 'Exécution confirmée',
+        icon: 'exchange'
+    });
+    sendExchangeEmail({
+        reference: event.reference,
+        from,
+        to,
+        amount: event.amount,
+        status: event.status
+    });
+}
+</script>
+</body>
+</html>

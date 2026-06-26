@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CREDIT SUISSE – Tableau de bord</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<script src="icons.js"></script>
+<script src="app.js"></script>
+<script>checkSession(); initBank();</script>
+
+<div id="app"></div>
+
+<script>
+const content = `
+    <div class="page-title">Bonjour, ${BANK.clientName.split(' ')[0]}</div>
+    <div class="page-subtitle">Aperçu de votre patrimoine — ${new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}</div>
+
+    <div class="rates-bar">
+        <div class="rate-item"><span class="pair">EUR/CHF</span><span class="val">0.97</span></div>
+        <div class="rate-item"><span class="pair">USD/CHF</span><span class="val">0.89</span></div>
+        <div class="rate-item"><span class="pair">GBP/CHF</span><span class="val">1.12</span></div>
+        <div class="rate-item"><span class="pair">SMI</span><span class="val positive">+0.42%</span></div>
+        <div class="rate-item"><span class="pair">Or</span><span class="val">CHF 2 340/oz</span></div>
+    </div>
+
+    <div class="summary dashboard-summary">
+        <div class="box">
+            <h4>Fortune totale</h4>
+            <div class="value">${formatEUR(BANK.totalWealth)}</div>
+            <div class="change negative">▼ ${formatEUR(Math.abs(BANK.performance))} (${BANK.performancePct} %)</div>
+        </div>
+        <div class="box">
+            <h4>Liquidités disponibles</h4>
+            <div class="value">${formatEUR(BANK.cash)}</div>
+            <div class="change positive">Comptes courants & épargne</div>
+        </div>
+        <div class="box">
+            <h4>Valeur investissements</h4>
+            <div class="value">${formatEUR(BANK.investments)}</div>
+            <div class="change">3 portefeuilles actifs</div>
+        </div>
+        <div class="box performance-card">
+            <div class="history-badge" onclick="openHistory()">
+                Historique <span id="notifBadge" class="notif" style="display:none">0</span>
+            </div>
+            <div class="performance-content">
+                <h4>Performance (Année)</h4>
+                <div class="value negative"><span>${formatEUR(BANK.performance)}</span><span>${BANK.performancePct} %</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-2 dashboard-primary-grid">
+        <div class="chart-card wealth-chart-card">
+            <div class="chart-header">
+                <h3>Évolution du patrimoine</h3>
+                <div class="chart-tabs">
+                    <button class="chart-tab active" onclick="switchChart(this,'year')">1A</button>
+                    <button class="chart-tab" onclick="switchChart(this,'month')">1M</button>
+                    <button class="chart-tab" onclick="switchChart(this,'week')">1S</button>
+                </div>
+            </div>
+            <canvas id="portfolioChart" class="chart-area"></canvas>
+        </div>
+
+        <div class="card quick-actions-card">
+            <h3 style="margin:0 0 16px;color:var(--primary)">Actions rapides</h3>
+            <div class="actions" style="margin-top:0">
+                <a id="transferBtn" href="transfer.html" class="action-card">
+                    <div class="icon">${icon('transfer', { size: 22 })}</div><span>Virement</span>
+                </a>
+                <a id="exchangeBtn" href="exchange.html" class="action-card">
+                    <div class="icon">${icon('exchange', { size: 22 })}</div><span>Change</span>
+                </a>
+                <a href="invest.html" class="action-card">
+                    <div class="icon">${icon('invest', { size: 22 })}</div><span>Investir</span>
+                </a>
+                <a href="cards.html" class="action-card">
+                    <div class="icon">${icon('card', { size: 22 })}</div><span>Cartes</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="table portfolio-table-card">
+            <h3>Portefeuilles</h3>
+            <table>
+                <tr><th>Portefeuille</th><th>Valeur</th><th>Performance</th></tr>
+                <tr>
+                    <td>Tous les portefeuilles<br><span class="small">Patrimoine global</span></td>
+                    <td>${formatEUR(170000)}</td>
+                    <td class="negative">– € 5 900</td>
+                </tr>
+                <tr>
+                    <td>Exécution seule<br><span class="small">CH-104578-1</span></td>
+                    <td>${formatEUR(33000)}</td>
+                    <td class="negative">– € 6 200</td>
+                </tr>
+                <tr>
+                    <td>Gestion pilotée<br><span class="small">CH-104578-2</span></td>
+                    <td>${formatEUR(51000)}</td>
+                    <td class="negative">– € 21 700</td>
+                </tr>
+                <tr>
+                    <td>Fonds alternatifs<br><span class="small">CH-104578-3</span></td>
+                    <td>${formatEUR(86000)}</td>
+                    <td class="positive">+ € 2 400</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3 style="margin:0 0 16px;color:var(--primary)">Activité récente</h3>
+            <ul class="tx-list" id="recentTx">
+                <li class="tx-item">
+                    <div class="tx-icon invest">${icon('invest', { size: 20 })}</div>
+                    <div class="tx-info"><strong>Dividendes reçus</strong><span>Global Equity ETF — 15 juin 2026</span></div>
+                    <div class="tx-amount positive">+ € 420</div>
+                </li>
+                <li class="tx-item">
+                    <div class="tx-icon exchange">${icon('exchange', { size: 20 })}</div>
+                    <div class="tx-info"><strong>Change EUR → CHF</strong><span>10 juin 2026</span></div>
+                    <div class="tx-amount">CHF 9 700</div>
+                </li>
+            </ul>
+            <a href="#" onclick="openHistory();return false" style="display:block;text-align:center;margin-top:12px;font-size:13px;color:var(--primary-light);font-weight:600">Voir tout l'historique →</a>
+        </div>
+    </div>
+`;
+
+document.getElementById('app').innerHTML = renderAppLayout('dashboard.html', content);
+
+const chartData = {
+    year: [185000, 182000, 178000, 175000, 172000, 170000, 168000, 171000, 169000, 170000, 172000, 170000],
+    month: [171000, 170500, 170200, 169800, 170100, 170000, 169500, 170000],
+    week: [170200, 170100, 169900, 170000, 170050, 170000, 170000]
+};
+
+function switchChart(btn, period) {
+    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    drawChart('portfolioChart', chartData[period]);
+}
+
+applyBlockedState();
+updateNotifBadge();
+renderHistoryContent();
+
+const history = getTransactions();
+if (history.length) {
+    const recent = document.getElementById('recentTx');
+    history.slice(0, 3).forEach(t => {
+        recent.insertAdjacentHTML('afterbegin', `
+            <li class="tx-item">
+                ${txIcon(t.icon || 'transfer')}
+                <div class="tx-info"><strong>${t.type}</strong><span>${t.date}</span></div>
+                <div class="tx-amount">${t.amount}</div>
+            </li>`);
+    });
+}
+
+window.addEventListener('load', () => drawChart('portfolioChart', chartData.year));
+window.addEventListener('resize', () => drawChart('portfolioChart', chartData.year));
+</script>
+</body>
+</html>

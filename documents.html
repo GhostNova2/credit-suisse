@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BANK SUISSE – Documents</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<script src="icons.js"></script>
+<script src="app.js"></script>
+<script>checkSession();</script>
+<div id="app"></div>
+
+<script>
+const content = `
+    <div class="page-title">Documents & KYC</div>
+    <div class="page-subtitle">Gérez vos documents d'identité et consultez vos relevés</div>
+
+    <div class="grid-2" style="align-items:start">
+        <div class="card">
+            <h3 style="margin:0 0 16px;color:var(--primary)">Statut KYC</h3>
+            <p>Statut : <span class="badge badge-success">Vérifié</span></p>
+            <p style="color:var(--text-muted)">Client : <b>${BANK.clientName}</b></p>
+            <p style="color:var(--text-muted)">Identifiant : <b>${BANK.clientId}</b></p>
+            <p style="color:var(--text-muted)">Type de compte : <b>Private Banking</b></p>
+            <p style="color:var(--text-muted)">Responsable : <b>${BANK.rmName}</b></p>
+            <p style="color:var(--text-muted);font-size:13px;margin-top:16px">Dernière vérification : 12 mars 2026</p>
+        </div>
+
+        <div class="card">
+            <h3 style="margin:0 0 16px;color:var(--primary)">Téléverser un document</h3>
+            <p style="color:var(--text-muted);font-size:14px">Passeport, carte d'identité ou justificatif de domicile (PDF, JPG — max 10 Mo)</p>
+            <input type="file" id="fileUpload" accept=".pdf,.jpg,.jpeg,.png" style="margin-top:12px">
+            <button class="action-btn" onclick="uploadDoc()" style="width:100%;margin-top:16px">Envoyer le document</button>
+            <div class="success-msg" id="uploadSuccess" style="display:none">Document envoyé avec succès. Statut : Analyse en cours (24-48h).</div>
+        </div>
+    </div>
+
+    <div class="table">
+        <h3>Documents archivés</h3>
+        <table>
+            <tr><th>Document</th><th>Type</th><th>Date</th><th>Statut</th><th></th></tr>
+            <tr><td>Passeport.pdf</td><td>Identité</td><td>15 jan. 2024</td><td><span class="badge badge-success">Approuvé</span></td><td><a href="#" style="color:var(--primary-light);font-weight:600">Voir</a></td></tr>
+            <tr><td>JustificatifDomicile.pdf</td><td>Adresse</td><td>15 jan. 2024</td><td><span class="badge badge-success">Approuvé</span></td><td><a href="#" style="color:var(--primary-light);font-weight:600">Voir</a></td></tr>
+            <tr><td>ContratCompte.pdf</td><td>Contrat</td><td>10 jan. 2024</td><td><span class="badge badge-success">Signé</span></td><td><a href="#" style="color:var(--primary-light);font-weight:600">Voir</a></td></tr>
+        </table>
+    </div>
+
+    <div class="table">
+        <h3>Relevés bancaires</h3>
+        <table>
+            <tr><th>Relevé</th><th>Période</th><th>Format</th><th></th></tr>
+            <tr><td>Relevé T4 2025</td><td>Oct – Déc 2025</td><td>PDF</td><td><button class="action-btn" style="padding:6px 16px;font-size:12px" onclick="downloadStatement('T4_2025')">Télécharger</button></td></tr>
+            <tr><td>Relevé T1 2026</td><td>Jan – Mar 2026</td><td>PDF</td><td><button class="action-btn" style="padding:6px 16px;font-size:12px" onclick="downloadStatement('T1_2026')">Télécharger</button></td></tr>
+            <tr><td>Relevé T2 2026</td><td>Avr – Juin 2026</td><td>PDF</td><td><button class="action-btn" style="padding:6px 16px;font-size:12px" onclick="downloadStatement('T2_2026')">Télécharger</button></td></tr>
+        </table>
+    </div>
+`;
+
+document.getElementById('app').innerHTML = renderAppLayout('documents.html', content);
+
+function uploadDoc() {
+    const file = document.getElementById('fileUpload').files[0];
+    if (!file) { alert('Veuillez sélectionner un fichier.'); return; }
+    document.getElementById('uploadSuccess').style.display = 'block';
+    const event = addBankEvent({
+        prefix: 'DOC',
+        type: 'Document KYC envoyé',
+        title: 'Document reçu',
+        amount: file.name,
+        status: 'Analyse en cours',
+        details: 'Vérification conformité 24-48h',
+        notification: 'Votre document a été transmis au service conformité.',
+        operationType: 'Document',
+        currentStep: 'Analyse en cours',
+        icon: 'document'
+    });
+    sendDocumentEmail({
+        reference: event.reference,
+        file_name: file.name,
+        status: event.status
+    });
+}
+
+function downloadStatement(id) {
+    alert('Téléchargement du relevé ' + id + '.pdf — simulation démo.');
+}
+</script>
+</body>
+</html>

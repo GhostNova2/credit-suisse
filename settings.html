@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CREDIT SUISSE – Paramètres</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<script src="icons.js"></script>
+<script src="app.js"></script>
+<script>checkSession();</script>
+<div id="app"></div>
+
+<script>
+const content = `
+    <div class="page-title">Paramètres</div>
+    <div class="page-subtitle">Gérez votre profil et vos préférences de sécurité</div>
+
+    <div class="grid-2" style="align-items:start">
+        <div class="form-box">
+            <h3 style="margin:0 0 20px;color:var(--primary)">Profil client</h3>
+            <div class="group">
+                <label>Nom complet</label>
+                <input type="text" value="${BANK.clientName}" readonly>
+            </div>
+            <div class="group">
+                <label>Identifiant client</label>
+                <input type="text" value="${BANK.clientId}" readonly>
+            </div>
+            <div class="group">
+                <label>Email</label>
+                <input type="email" value="nicolas.faure@email.ch">
+            </div>
+            <div class="group">
+                <label>Téléphone</label>
+                <input type="tel" value="+41 79 123 45 67">
+            </div>
+            <div class="group">
+                <label>Adresse</label>
+                <input type="text" value="Quai du Mont-Blanc 11, 1201 Genève">
+            </div>
+            <button class="action-btn" onclick="saveProfile()" style="width:100%">Enregistrer les modifications</button>
+            <div class="success-msg" id="profileSaved" style="display:none">Profil mis à jour avec succès.</div>
+        </div>
+
+        <div>
+            <div class="form-box" style="margin-bottom:20px">
+                <h3 style="margin:0 0 20px;color:var(--primary)">Sécurité</h3>
+                <div class="tx-item">
+                    <div class="tx-info"><strong>Authentification à deux facteurs</strong><span>Protection renforcée</span></div>
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                        <input type="checkbox" checked style="width:auto"> Activé
+                    </label>
+                </div>
+                <div class="tx-item">
+                    <div class="tx-info"><strong>Alertes par SMS</strong><span>Transactions > CHF 1 000</span></div>
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                        <input type="checkbox" checked style="width:auto"> Activé
+                    </label>
+                </div>
+                <div class="tx-item">
+                    <div class="tx-info"><strong>Alertes par email</strong><span>Connexions & virements</span></div>
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                        <input type="checkbox" checked style="width:auto"> Activé
+                    </label>
+                </div>
+                <button class="action-btn outline" style="width:100%;margin-top:16px" onclick="alert('Un email de réinitialisation a été envoyé.')">Changer le mot de passe</button>
+            </div>
+
+            <div class="form-box">
+                <h3 style="margin:0 0 16px;color:var(--primary)">Préférences</h3>
+                <div class="group">
+                    <label>Langue</label>
+                    <select><option selected>Français</option><option>Deutsch</option><option>English</option><option>Italiano</option></select>
+                </div>
+                <div class="group">
+                    <label>Devise d'affichage</label>
+                    <select><option selected>EUR – Euro</option><option>CHF – Franc suisse</option><option>USD – Dollar</option></select>
+                </div>
+                <div class="group">
+                    <label>Thème</label>
+                    <select id="themeSelect" onchange="setTheme(this.value)">
+                        <option value="light">Clair</option>
+                        <option value="dark">Sombre</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+        <h3 style="margin:0 0 12px;color:var(--primary)">Votre gestionnaire de relation</h3>
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+            <div class="avatar" style="width:56px;height:56px;font-size:18px">DW</div>
+            <div>
+                <strong style="font-size:16px">${BANK.rmName}</strong>
+                <p style="margin:4px 0;color:var(--text-muted);font-size:14px">Senior Relationship Manager — Genève</p>
+                <p style="margin:0;color:var(--text-muted);font-size:13px" class="icon-inline">
+                    ${icon('phone', { size: 14 })} +41 22 888 12 34
+                    <span style="margin:0 8px">·</span>
+                    ${icon('mail', { size: 14 })} d.weber@banksuisse.ch
+                </p>
+            </div>
+            <button class="action-btn" style="margin-left:auto" onclick="openSupport()">Contacter</button>
+        </div>
+    </div>
+`;
+
+document.getElementById('app').innerHTML = renderAppLayout('settings.html', content);
+
+function saveProfile() {
+    document.getElementById('profileSaved').style.display = 'block';
+}
+
+function setTheme(theme) {
+    if (theme === 'dark') {
+        document.documentElement.style.setProperty('--bg', '#0f172a');
+        document.documentElement.style.setProperty('--surface', '#1e293b');
+        document.documentElement.style.setProperty('--text', '#f1f5f9');
+        document.documentElement.style.setProperty('--border', '#334155');
+    } else {
+        document.documentElement.style.setProperty('--bg', '#eef1f6');
+        document.documentElement.style.setProperty('--surface', '#ffffff');
+        document.documentElement.style.setProperty('--text', '#1e293b');
+        document.documentElement.style.setProperty('--border', '#e2e8f0');
+    }
+}
+</script>
+</body>
+</html>

